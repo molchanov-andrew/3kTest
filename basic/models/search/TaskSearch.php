@@ -11,7 +11,6 @@
    */
   class TaskSearch extends Task
   {
-	public $executor;
 
 	/**
 	 * {@inheritdoc}
@@ -42,12 +41,26 @@
 	 */
 	public function search($params)
 	{
-	  $query = Task::find()->with('taskExecutor');
+	  $query = Task::find()->joinWith('taskExecutor');
 
 	  // add conditions that should always apply here
 
 	  $dataProvider = new ActiveDataProvider([
 		  'query' => $query,
+		'sort' => [
+			'defaultOrder' => ['id' => SORT_ASC],
+		  'attributes' => [
+		  	'id',
+			'task_name',
+			'dead_line',
+			'status_id',
+			'description',
+			'executor_id' => [
+				'asc' => ['{{%executor}}.name' => SORT_ASC],
+				'desc' => ['{{%executor}}.name' => SORT_DESC],
+			]
+		  ]
+		]
 	  ]);
 
 	  $this->load($params);
